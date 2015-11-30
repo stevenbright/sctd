@@ -1,6 +1,7 @@
 package sctd.logic.dispatcher;
 
 import sctd.logic.command.CommandProcessor;
+import sctd.logic.command.MoveCommand;
 import sctd.model.GameUnit;
 
 import java.util.ArrayList;
@@ -14,6 +15,8 @@ public final class GameDispatcher implements CommandProcessor {
 
   private final List<GameUnit> units = new ArrayList<>(100);
   private int idCounter = 1;
+
+  private GameUnit selectedUnit;
 
   public List<GameUnit> getUnits() {
     return units;
@@ -38,26 +41,60 @@ public final class GameDispatcher implements CommandProcessor {
     }
   }
 
+  public GameUnit select(double x, double y) {
+    final int size = units.size();
+    //noinspection ForLoopReplaceableByForEach
+    for (int i = 0; i < size; ++i) {
+      final GameUnit unit = units.get(i);
+      final double ux = unit.getX();
+      final double uy = unit.getY();
+      final double us = unit.getSize();
+
+      if ((x > ux) && (x < (ux + us)) && (y > uy) && (y < (uy + us))) {
+        // remove previous selection
+        if (selectedUnit != null) {
+          selectedUnit.setSelected(false);
+        }
+        //System.out.println("Unit #" + unit.getId() + " has been selected");
+        // mark this unit as selected
+        unit.setSelected(true);
+        selectedUnit = unit;
+        return unit;
+      }
+    }
+
+    return null;
+  }
+
+  public GameUnit moveSelectedTo(double x, double y) {
+    final GameUnit unit = this.selectedUnit;
+    if (unit != null) {
+      final double halfSize = unit.getSize() / 2.0;
+      unit.getCommands().newCommand(new MoveCommand(x - halfSize, y - halfSize));
+    }
+    return unit;
+  }
+
   @Override
-  public void move(GameUnit unit, int targetX, int targetY) {
+  public void move(GameUnit unit, double targetX, double targetY) {
     moveTo(unit, targetX, targetY);
   }
 
   @Override
-  public void patrol(GameUnit unit, int targetX, int targetY) {
+  public void patrol(GameUnit unit, double targetX, double targetY) {
     moveTo(unit, targetX, targetY);
   }
 
   @Override
   public void standStill(GameUnit unit) {
-    // TODO: decelleration?
+    // TODO: idle move
   }
 
   //
   // Private
   //
 
-  private boolean moveTo(GameUnit unit, int targetX, int targetY) {
+  private boolean moveTo(GameUnit unit, double targetX, double targetY) {
     // unit already arrived?
     if (unit.isJustStopped()) {
       if (unit.getStopTimer() > 0) {

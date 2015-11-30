@@ -10,6 +10,9 @@ import sctd.model.GameUnit;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,7 +20,7 @@ import java.util.Set;
 /**
  * @author Alexander Shabanov
  */
-public final class MainGameWindowSnowDemo extends GameLoopCallback {
+public final class SnowDemo extends GameLoopCallback {
 
   private int fx = 250;
   private int fy = 250;
@@ -31,7 +34,7 @@ public final class MainGameWindowSnowDemo extends GameLoopCallback {
     GO_RIGHT,
   }
 
-  public MainGameWindowSnowDemo() {
+  public SnowDemo() {
     dispatcher = new GameDispatcher();
 
     final GameUnit unit1 = dispatcher.addUnit(50, 50, 48, 1);
@@ -94,10 +97,25 @@ public final class MainGameWindowSnowDemo extends GameLoopCallback {
     }
   };
 
+  private final MouseAdapter mouseAdapter = new MouseAdapter() {
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+      //System.out.println("button=" + e.getButton());
+
+      if (e.getButton() == MouseEvent.BUTTON1) {
+        SnowDemo.this.dispatcher.select(e.getX(), e.getY());
+      } else if (e.getButton() == MouseEvent.BUTTON3) {
+        SnowDemo.this.dispatcher.moveSelectedTo(e.getX(), e.getY());
+      }
+    }
+  };
+
   public static void main(String[] args) {
     final MainGameWindow mainGameWindow = new MainGameWindow();
-    final MainGameWindowSnowDemo snowDemo = new MainGameWindowSnowDemo();
+    final SnowDemo snowDemo = new SnowDemo();
     mainGameWindow.getCanvas().addKeyListener(snowDemo.keyAdapter);
+    mainGameWindow.getCanvas().addMouseListener(snowDemo.mouseAdapter);
 
     mainGameWindow.setGameLoopCallback(snowDemo);
     mainGameWindow.startLoop();
@@ -143,6 +161,12 @@ public final class MainGameWindowSnowDemo extends GameLoopCallback {
   //
 
   private static void drawUnit(GameUnit unit, Graphics2D g2d) {
+    if (unit.isSelected()) {
+      g2d.setPaint(Color.GREEN);
+      final double gap = unit.getSize() / 4;
+      g2d.draw(new Ellipse2D.Double(unit.getX(), unit.getY() + gap, unit.getSize(), unit.getSize() - gap));
+    }
+
     Color bkColor = Color.GRAY;
     Color triColor = Color.WHITE;
     switch (unit.getSpriteId()) {

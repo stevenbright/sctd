@@ -40,6 +40,9 @@ public final class GameUnit {
   private int stopTimer;
   private boolean justStopped;
 
+  // selection
+  private boolean selected;
+
   // game commands
   private final GameCommandQueue commands = new GameCommandQueue();
 
@@ -113,6 +116,7 @@ public final class GameUnit {
       return true;
     }
 
+    // TODO: proper angle detection
     if (deltaAngle > 0.0) {
       // rotate counter clockwise
       this.setAngle(this.angle + angularVelocity);
@@ -134,5 +138,9 @@ public final class GameUnit {
   public void setAcceleration(double value) {
     assert value >= 0.0;
     this.acceleration = value;
+  }
+
+  public void setSelected(boolean selected) {
+    this.selected = selected;
   }
 }

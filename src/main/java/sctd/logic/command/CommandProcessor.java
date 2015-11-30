@@ -7,9 +7,9 @@ import sctd.model.GameUnit;
  */
 public interface CommandProcessor {
 
-  void move(GameUnit unit, int targetX, int targetY);
+  void move(GameUnit unit, double targetX, double targetY);
 
-  void patrol(GameUnit unit, int targetX, int targetY);
+  void patrol(GameUnit unit, double targetX, double targetY);
 
   void standStill(GameUnit unit);
 }

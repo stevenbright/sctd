@@ -6,7 +6,7 @@ import sctd.model.GameUnit;
  * @author Alexander Shabanov
  */
 public final class MoveCommand extends CoordinateBasedCommand {
-  public MoveCommand(int targetX, int targetY) {
+  public MoveCommand(double targetX, double targetY) {
     super(targetX, targetY);
   }
 

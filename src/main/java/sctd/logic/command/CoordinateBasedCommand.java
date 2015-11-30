@@ -4,19 +4,19 @@ package sctd.logic.command;
  * @author Alexander Shabanov
  */
 public abstract class CoordinateBasedCommand extends GameCommand {
-  private final int targetX;
-  private final int targetY;
+  private final double targetX;
+  private final double targetY;
 
-  public CoordinateBasedCommand(int targetX, int targetY) {
+  public CoordinateBasedCommand(double targetX, double targetY) {
     this.targetX = targetX;
     this.targetY = targetY;
   }
 
-  public int getTargetX() {
+  public double getTargetX() {
     return targetX;
   }
 
-  public int getTargetY() {
+  public double getTargetY() {
     return targetY;
   }
 

@@ -6,7 +6,7 @@ import sctd.model.GameUnit;
  * @author Alexander Shabanov
  */
 public final class PatrolCommand extends CoordinateBasedCommand {
-  public PatrolCommand(int targetX, int targetY) {
+  public PatrolCommand(double targetX, double targetY) {
     super(targetX, targetY);
   }
 
