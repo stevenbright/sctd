@@ -11,7 +11,7 @@ import java.awt.image.BufferStrategy;
 /**
  * @author Alexander Shabanov
  */
-public final class MainGameWindow extends Canvas {
+public final class MainGameWindow {
   public static final int DEFAULT_CANVAS_WIDTH = 1024;
   public static final int DEFAULT_CANVAS_HEIGHT = 768;
 
@@ -19,9 +19,8 @@ public final class MainGameWindow extends Canvas {
   private boolean bRunning = true; // main loop
   private final int canvasWidth = DEFAULT_CANVAS_WIDTH;
   private final int canvasHeight = DEFAULT_CANVAS_HEIGHT;
-  private final JFrame frame;
-  final JPanel pane = new JPanel();
   private GameLoopCallback gameLoopCallback;
+  private final Canvas canvas;
 
   public GameLoopCallback getGameLoopCallback() {
     return gameLoopCallback;
@@ -31,9 +30,16 @@ public final class MainGameWindow extends Canvas {
     this.gameLoopCallback = gameLoopCallback;
   }
 
+  public Component getCanvas() {
+    return canvas;
+  }
+
   public MainGameWindow() {
+    this.canvas = new Canvas();
+
     final String title = "MainGameWindow";
-    frame = new JFrame(title);
+
+    final JFrame frame = new JFrame(title);
     frame.setBounds(0, 0, canvasWidth, canvasHeight);
     frame.setLayout(null);
     frame.setLocationRelativeTo(null);
@@ -52,19 +58,20 @@ public final class MainGameWindow extends Canvas {
     });
 
     // Panel added
+    final JPanel pane = new JPanel();
     pane.setBounds(0, 0, canvasWidth, canvasHeight);
     pane.setLayout(null);
     frame.add(pane);
 
     // this Canvas added
-    setBounds(pane.getBounds());
-    pane.add(this);
-    setIgnoreRepaint(true); // active painting only on canvas, does this apply to swing?
-    requestFocus();  // get focus for keys
+    canvas.setBounds(pane.getBounds());
+    pane.add(canvas);
+    canvas.setIgnoreRepaint(true); // active painting only on canvas, does this apply to swing?
+    canvas.requestFocus();  // get focus for keys
 
     // make it fast with this strat
-    createBufferStrategy(2);
-    bsStrategy = getBufferStrategy();
+    canvas.createBufferStrategy(2);
+    bsStrategy = canvas.getBufferStrategy();
   }
 
   public void startLoop() {
