@@ -5,7 +5,7 @@ import java.awt.*;
 /**
  * @author Alexander Shabanov
  */
-public interface GameLoopCallback {
+public abstract class GameLoopCallback {
 
-  void draw(Graphics2D g2d);
+  public abstract void draw(Graphics2D g2d);
 }

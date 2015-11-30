@@ -20,11 +20,18 @@ public final class MainGameWindow extends Canvas {
   private final int canvasWidth = DEFAULT_CANVAS_WIDTH;
   private final int canvasHeight = DEFAULT_CANVAS_HEIGHT;
   private final JFrame frame;
-  private final GameLoopCallback gameLoopCallback;
+  final JPanel pane = new JPanel();
+  private GameLoopCallback gameLoopCallback;
 
-  public MainGameWindow(GameLoopCallback gameLoopCallback) {
+  public GameLoopCallback getGameLoopCallback() {
+    return gameLoopCallback;
+  }
+
+  public void setGameLoopCallback(GameLoopCallback gameLoopCallback) {
     this.gameLoopCallback = gameLoopCallback;
+  }
 
+  public MainGameWindow() {
     final String title = "MainGameWindow";
     frame = new JFrame(title);
     frame.setBounds(0, 0, canvasWidth, canvasHeight);
@@ -45,7 +52,6 @@ public final class MainGameWindow extends Canvas {
     });
 
     // Panel added
-    final JPanel pane = new JPanel();
     pane.setBounds(0, 0, canvasWidth, canvasHeight);
     pane.setLayout(null);
     frame.add(pane);
@@ -78,7 +84,9 @@ public final class MainGameWindow extends Canvas {
       g2d.fillRect(0, 0, canvasWidth, canvasHeight);
 
       // Draw game loop data
-      gameLoopCallback.draw(g2d);
+      if (getGameLoopCallback() != null) {
+        getGameLoopCallback().draw(g2d);
+      }
 
       // fps counter
       if ((System.currentTimeMillis() - startTime) > 1000){
