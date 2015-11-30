@@ -1,7 +1,5 @@
 package sctd;
 
-import sctd.main.GameLoopCallback;
-import sctd.main.MainGameWindow;
 import sctd.model.GameUnit;
 
 import javax.annotation.Generated;

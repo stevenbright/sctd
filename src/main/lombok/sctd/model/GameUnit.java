@@ -9,9 +9,12 @@ import sctd.logic.command.queue.GameCommandQueue;
  */
 @Getter
 @ToString
-public class GameUnit {
+public final class GameUnit {
+  private static final double TWO_PI = Math.PI * 2.0; // 2*pi or 360 degrees
+
   private int id;
 
+  // health
   private int life;
   private int shields;
 
@@ -25,9 +28,10 @@ public class GameUnit {
   private int spriteId;
 
   // movement
-  private double currentSpeed = 0.0;
-  private double maximumSpeed = 4.0;
+  private double currentVelocity = 0.0;
+  private double maximumVelocity = 4.0;
   private double acceleration = 0.8;
+  private double angularVelocity = Math.PI / 18; // 10 degrees
 
   // orientation
   private double angle;
@@ -38,6 +42,10 @@ public class GameUnit {
 
   // game commands
   private final GameCommandQueue commands = new GameCommandQueue();
+
+  //
+  // Mutators
+  //
 
   public void setId(int id) {
     this.id = id;
@@ -59,30 +67,60 @@ public class GameUnit {
 
   public void accellerate(double distance) {
     if (acceleration == 0.0) {
-      currentSpeed = maximumSpeed; // instant acceleration
+      currentVelocity = maximumVelocity; // instant acceleration
       return;
     }
 
-    final double deceleration = -acceleration;
-    final double decelerationDistance = Math.abs((currentSpeed * currentSpeed) / (2 * deceleration));
+    // TODO: at the moment acceleration and deceleration change velocity in a linear way - it'd be better to use
+    // TODO: (contd.)   easing (e.g. easeOutQuad)
+    // TODO: (contd.)   http://stackoverflow.com/questions/5916058/jquery-easing-function-variables-comprehension
+    // TODO: (contd.)   http://api.jqueryui.com/easings/
+    final double decelerationDistance = (currentVelocity * currentVelocity) / (2 * acceleration);
     if (distance < decelerationDistance) {
       // decelerate when coming closer
-      currentSpeed = Math.max(0.0, currentSpeed + deceleration);
+      currentVelocity = Math.max(0.0, currentVelocity - acceleration);
       return;
     }
 
     // deceleration is not needed - accellerate instead
-    if (currentSpeed < maximumSpeed) {
-      currentSpeed = Math.max(currentSpeed + acceleration, maximumSpeed);
+    if (currentVelocity < maximumVelocity) {
+      currentVelocity = Math.max(currentVelocity + acceleration, maximumVelocity);
     }
   }
 
-  public void setCurrentSpeed(double speed) {
-    this.currentSpeed = speed;
+  public void setCurrentVelocity(double speed) {
+    this.currentVelocity = speed;
+  }
+
+  public void setMaximumVelocity(double maximumVelocity) {
+    this.maximumVelocity = maximumVelocity;
   }
 
   public void setAngle(double angle) {
-    this.angle = angle;
+    this.angle = angle > TWO_PI ? angle - TWO_PI : angle;
+  }
+
+  public boolean rotateToAngle(double angle) {
+    if (angularVelocity == 0) {
+      // rotate immediately
+      setAngle(angle);
+      return true;
+    }
+
+    double deltaAngle = angle - this.angle;
+    if (Math.abs(deltaAngle) <= angularVelocity) {
+      setAngle(angle);
+      return true;
+    }
+
+    if (deltaAngle > 0.0) {
+      // rotate counter clockwise
+      this.setAngle(this.angle + angularVelocity);
+    } else {
+      // rotate clockwise
+      this.setAngle(this.angle - angularVelocity);
+    }
+    return false;
   }
 
   public void setStopTimer(int stopTimer) {

@@ -58,8 +58,7 @@ public final class GameDispatcher implements CommandProcessor {
   //
 
   private boolean moveTo(GameUnit unit, int targetX, int targetY) {
-    // TODO: rotate first
-
+    // unit already arrived?
     if (unit.isJustStopped()) {
       if (unit.getStopTimer() > 0) {
         unit.setStopTimer(unit.getStopTimer() - 1);
@@ -72,25 +71,32 @@ public final class GameDispatcher implements CommandProcessor {
       return true; // arrived
     }
 
+
     final double dx = targetX - unit.getX();
     final double dy = targetY - unit.getY();
     final double dist = Math.sqrt(dy * dy + dx * dx);
 
+    // calculate speed at the current point
     unit.accellerate(dist);
 
-    if (dist <= unit.getCurrentSpeed()) {
-      unit.setCurrentSpeed(0);
+    // unit has arrived? - if yes, stop it
+    if (dist <= unit.getCurrentVelocity()) {
+      unit.setCurrentVelocity(0);
       unit.setCoordinates(targetX, targetY, unit.getZ());
       unit.setStopTimer(DEFAULT_STOP_TIMER_VALUE);
       unit.setJustStopped(true);
       return true; // arrived
     }
 
+    // is unit faces the right direction? - if no, rotate it
     final double angle = Math.atan2(dy, dx);
-    unit.setAngle(angle);
+    if (!unit.rotateToAngle(angle)) {
+      return false;
+    }
 
-    final double newX = unit.getX() + unit.getCurrentSpeed() * Math.cos(angle);
-    final double newY = unit.getY() + unit.getCurrentSpeed() * Math.sin(angle);
+    // move unit to the target coordinates
+    final double newX = unit.getX() + unit.getCurrentVelocity() * Math.cos(angle);
+    final double newY = unit.getY() + unit.getCurrentVelocity() * Math.sin(angle);
     unit.setCoordinates(newX, newY, unit.getZ());
 
     return false; // unit is on its way

@@ -34,15 +34,24 @@ public final class MainGameWindowSnowDemo extends GameLoopCallback {
   public MainGameWindowSnowDemo() {
     dispatcher = new GameDispatcher();
 
-    final GameUnit unit1 = dispatcher.addUnit(50, 50, 16, 1);
+    final GameUnit unit1 = dispatcher.addUnit(50, 50, 48, 1);
+    unit1.setMaximumVelocity(4);
+    unit1.setAcceleration(0.5);
     unit1.getCommands().newCommand(new PatrolCommand(200, 250));
 
 
-    final GameUnit unit2 = dispatcher.addUnit(100, 100, 24, 2);
+    final GameUnit unit2 = dispatcher.addUnit(100, 100, 64, 2);
+    unit2.setMaximumVelocity(3);
+    unit2.setAcceleration(0.8);
     unit2.getCommands().newCommand(new MoveCommand(150, 220));
     unit2.getCommands().addCommand(new MoveCommand(100, 120));
     unit2.getCommands().addCommand(new MoveCommand(150, 200));
     unit2.getCommands().addCommand(new MoveCommand(180, 400));
+
+    final GameUnit unit3 = dispatcher.addUnit(100, 480, 128, 3);
+    unit3.setMaximumVelocity(2);
+    unit3.setAcceleration(0.1);
+    unit3.getCommands().newCommand(new PatrolCommand(720, 500));
   }
 
   private final Set<PlayerAction> playerActions = new HashSet<>(20);
@@ -134,26 +143,54 @@ public final class MainGameWindowSnowDemo extends GameLoopCallback {
   //
 
   private static void drawUnit(GameUnit unit, Graphics2D g2d) {
-    Color color;
+    Color bkColor = Color.GRAY;
+    Color triColor = Color.WHITE;
     switch (unit.getSpriteId()) {
       case 1:
-        color = Color.YELLOW;
+        bkColor = Color.YELLOW;
+        triColor = Color.GRAY;
         break;
 
       case 2:
-        color = Color.GREEN;
+        bkColor = Color.GREEN;
+        triColor = Color.WHITE;
         break;
 
-      default:
-        color = Color.GRAY;
+      case 3:
+        bkColor = Color.WHITE;
+        triColor = Color.RED;
+        break;
     }
 
-    final double gap = 2.0;
-    final double x = unit.getX() + gap;
-    final double y = unit.getY() + gap;
-    final double w = unit.getSize() - 2 * gap;
+    // center coord
+    final int size = (int) unit.getSize();
+    final int cx = (int) (unit.getX() + size / 2.0);
+    final int cy = (int) (unit.getY() + size / 2.0);
 
-    g2d.setPaint(color);
-    g2d.fill(new Rectangle2D.Double(x, y, w, w));
+    g2d.rotate(unit.getAngle(), cx, cy);
+
+    // prepare polygon array
+    final int[] xp = new int[3];
+    final int[] yp = new int[3];
+
+    // inner rectangle (wings)
+    {
+      xp[0] = cx + size / 8; xp[1] = xp[2] = cx - size / 8;
+      yp[0] = cy; yp[1] = cy - (3 * size) / 8; yp[2] = cy + (3 * size) / 8;
+
+      g2d.setPaint(bkColor);
+      g2d.fillPolygon(xp, yp, 3);
+    }
+
+    // outer rectangle (body)
+    {
+      xp[0] = cx + (size * 3) / 8; xp[1] = xp[2] = cx - (size * 3) / 8;
+      yp[0] = cy; yp[1] = cy - size / 4; yp[2] = cy + size / 4;
+
+      g2d.setPaint(triColor);
+      g2d.fillPolygon(xp, yp, 3);
+    }
+
+    g2d.rotate(-unit.getAngle(), cx, cy); // restore angle
   }
 }
