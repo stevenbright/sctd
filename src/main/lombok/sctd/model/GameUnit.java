@@ -103,14 +103,27 @@ public final class GameUnit {
     this.angle = angle > TWO_PI ? angle - TWO_PI : angle;
   }
 
+  public void setAngularVelocity(double angularVelocity) {
+    this.angularVelocity = angularVelocity;
+  }
+
   public boolean rotateToAngle(double angle) {
+    final double angularVelocity = this.getAngularVelocity();
+    final double currentAngle = this.angle;
+
+    if (spriteId == 3) {
+      System.out.println("currentAngle=" + currentAngle);
+    }
+
+    //atan2(sin(x-y), cos(x-y))
+
     if (angularVelocity == 0) {
       // rotate immediately
       setAngle(angle);
       return true;
     }
 
-    double deltaAngle = angle - this.angle;
+    double deltaAngle = angle - currentAngle;
     if (Math.abs(deltaAngle) <= angularVelocity) {
       setAngle(angle);
       return true;
@@ -119,10 +132,10 @@ public final class GameUnit {
     // TODO: proper angle detection
     if (deltaAngle > 0.0) {
       // rotate counter clockwise
-      this.setAngle(this.angle + angularVelocity);
+      this.setAngle(currentAngle + angularVelocity);
     } else {
       // rotate clockwise
-      this.setAngle(this.angle - angularVelocity);
+      this.setAngle(currentAngle - angularVelocity);
     }
     return false;
   }

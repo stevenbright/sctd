@@ -1,10 +1,13 @@
-package sctd;
+package sctd.logic.command;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
-public final class AppTest {
+/**
+ * @author Alexander Shabanov
+ */
+public final class GameCommandQueueTest {
 
   @Test
   public void shouldPass() {

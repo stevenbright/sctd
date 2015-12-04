@@ -1,5 +1,7 @@
 package sctd.demo;
 
+import sctd.graphics.SpriteService;
+import sctd.graphics.support.DemoSpriteService;
 import sctd.logic.command.MoveCommand;
 import sctd.logic.command.PatrolCommand;
 import sctd.logic.dispatcher.GameDispatcher;
@@ -12,7 +14,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,6 +27,7 @@ public final class SnowDemo extends GameLoopCallback {
   private int fy = 250;
 
   private final GameDispatcher dispatcher;
+  private final SpriteService spriteService = new DemoSpriteService();
 
   private enum PlayerAction {
     GO_UP,
@@ -127,7 +129,7 @@ public final class SnowDemo extends GameLoopCallback {
   @Override
   public void draw(Graphics2D g2d) {
     for (final GameUnit unit : dispatcher.getUnits()) {
-      drawUnit(unit, g2d);
+      spriteService.drawUnit(unit, g2d);
     }
 
     ++counter;
@@ -154,67 +156,5 @@ public final class SnowDemo extends GameLoopCallback {
     if (playerActions.contains(PlayerAction.GO_RIGHT)) {
       fx = fx + fdelta;
     }
-  }
-
-  //
-  // Private
-  //
-
-  private static void drawUnit(GameUnit unit, Graphics2D g2d) {
-    if (unit.isSelected()) {
-      g2d.setPaint(Color.GREEN);
-      final double gap = unit.getSize() / 4;
-      g2d.draw(new Ellipse2D.Double(unit.getX(), unit.getY() + gap, unit.getSize(), unit.getSize() - gap));
-    }
-
-    Color bkColor = Color.GRAY;
-    Color triColor = Color.WHITE;
-    switch (unit.getSpriteId()) {
-      case 1:
-        bkColor = Color.YELLOW;
-        triColor = Color.GRAY;
-        break;
-
-      case 2:
-        bkColor = Color.GREEN;
-        triColor = Color.WHITE;
-        break;
-
-      case 3:
-        bkColor = Color.WHITE;
-        triColor = Color.RED;
-        break;
-    }
-
-    // center coord
-    final int size = (int) unit.getSize();
-    final int cx = (int) (unit.getX() + size / 2.0);
-    final int cy = (int) (unit.getY() + size / 2.0);
-
-    g2d.rotate(unit.getAngle(), cx, cy);
-
-    // prepare polygon array
-    final int[] xp = new int[3];
-    final int[] yp = new int[3];
-
-    // inner rectangle (wings)
-    {
-      xp[0] = cx + size / 8; xp[1] = xp[2] = cx - size / 8;
-      yp[0] = cy; yp[1] = cy - (3 * size) / 8; yp[2] = cy + (3 * size) / 8;
-
-      g2d.setPaint(bkColor);
-      g2d.fillPolygon(xp, yp, 3);
-    }
-
-    // outer rectangle (body)
-    {
-      xp[0] = cx + (size * 3) / 8; xp[1] = xp[2] = cx - (size * 3) / 8;
-      yp[0] = cy; yp[1] = cy - size / 4; yp[2] = cy + size / 4;
-
-      g2d.setPaint(triColor);
-      g2d.fillPolygon(xp, yp, 3);
-    }
-
-    g2d.rotate(-unit.getAngle(), cx, cy); // restore angle
   }
 }
