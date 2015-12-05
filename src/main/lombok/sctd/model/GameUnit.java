@@ -31,10 +31,10 @@ public final class GameUnit {
   private double currentVelocity = 0.0;
   private double maximumVelocity = 4.0;
   private double acceleration = 0.8;
-  private double angularVelocity = Math.PI / 18; // 10 degrees
-
+  
   // orientation
   private double angle;
+  private double angularVelocity = Math.PI / 18; // 10 degrees
 
   // nicer movement (stop when command completed)
   private int stopTimer;

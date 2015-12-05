@@ -120,6 +120,11 @@ public final class FastTrigonometry {
   }
 
   public static int atan2(double y, double x) {
+
+    if (y > 0) {
+
+    }
+
     if (y == 0.0) {
       if (x == 0.0) {
         throw new IllegalArgumentException("Both x and y can't be zero");
@@ -129,6 +134,19 @@ public final class FastTrigonometry {
       }
       return HALF_N; // equivalent of PI
     }
+
+    if (x == 0.0) {
+      return y > 0 ? 0 : THREE_QUARTERS_N;
+    }
+
+    if (y > 0) {
+      if (x < 0) {
+
+      } else {
+
+      }
+    }
+
     final double v = (Math.sqrt(y * y + x * x) - x) / y;
     return 2 * atan(v);
   }
