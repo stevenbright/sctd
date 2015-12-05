@@ -33,7 +33,8 @@ public final class FastTrigonometry {
   private static final double[] SIN_TABLE = new double[N];
   private static final double[] COS_TABLE = new double[N];
 
-  private static final double ATAN_TABLE_MULTIPLIER = 50.0; // found by experimentation
+  // found by experimentation, this value is heavily dependent on N
+  private static final double ATAN_TABLE_MULTIPLIER = 50.0;
   private static final int[] ATAN_TABLE;
   private static final double MAX_ATAN_VALUE;
 
@@ -56,7 +57,7 @@ public final class FastTrigonometry {
       double midAngle = 0.0;
       int nextAngleIndex = 0;
       for (int i = 0; i < atanTableSize; ++i) {
-        final double actualAngle = Math.atan(i / ATAN_TABLE_MULTIPLIER);
+        final double actualAngle = Math.atan((i + 1) / ATAN_TABLE_MULTIPLIER);
         if (actualAngle >= nextAngle) {
           final double curAngle = nextAngle;
           ++nextAngleIndex;
@@ -118,5 +119,17 @@ public final class FastTrigonometry {
     return ATAN_TABLE[(int) (value * ATAN_TABLE_MULTIPLIER)];
   }
 
-
+  public static int atan2(double y, double x) {
+    if (y == 0.0) {
+      if (x == 0.0) {
+        throw new IllegalArgumentException("Both x and y can't be zero");
+      }
+      if (x > 0) {
+        return 0;
+      }
+      return HALF_N; // equivalent of PI
+    }
+    final double v = (Math.sqrt(y * y + x * x) - x) / y;
+    return 2 * atan(v);
+  }
 }
