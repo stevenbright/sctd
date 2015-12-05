@@ -111,12 +111,6 @@ public final class GameUnit {
     final double angularVelocity = this.getAngularVelocity();
     final double currentAngle = this.angle;
 
-    if (spriteId == 3) {
-      System.out.println("currentAngle=" + currentAngle);
-    }
-
-    //atan2(sin(x-y), cos(x-y))
-
     if (angularVelocity == 0) {
       // rotate immediately
       setAngle(angle);

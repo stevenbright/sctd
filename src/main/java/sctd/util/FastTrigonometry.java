@@ -33,7 +33,7 @@ public final class FastTrigonometry {
   private static final double[] SIN_TABLE = new double[N];
   private static final double[] COS_TABLE = new double[N];
 
-  private static final double ATAN_TABLE_MULTIPLIER = 1000.0;
+  private static final double ATAN_TABLE_MULTIPLIER = 50.0; // found by experimentation
   private static final int[] ATAN_TABLE;
   private static final double MAX_ATAN_VALUE;
 
@@ -52,18 +52,19 @@ public final class FastTrigonometry {
       final int atanTableSize = 2 + (int) (MAX_ATAN_VALUE * ATAN_TABLE_MULTIPLIER);
       ATAN_TABLE = new int[atanTableSize];
 
-      int currentAngleIndex = 0;
-      double nextTangentMult = 0.0;
-      double medianAngleMult = 0.0;
+      double nextAngle = 0.0;
+      double midAngle = 0.0;
+      int nextAngleIndex = 0;
       for (int i = 0; i < atanTableSize; ++i) {
-        final double atanMult = Math.atan(i / ATAN_TABLE_MULTIPLIER);
-        if (atanMult > nextTangentMult || i == 0) {
-          final double prevTangentMult = nextTangentMult;
-          nextTangentMult = Math.tan(toRadians(++currentAngleIndex));
-          medianAngleMult = (prevTangentMult + nextTangentMult) / 2.0;
+        final double actualAngle = Math.atan(i / ATAN_TABLE_MULTIPLIER);
+        if (actualAngle >= nextAngle) {
+          final double curAngle = nextAngle;
+          ++nextAngleIndex;
+          nextAngle = toRadians(nextAngleIndex);
+          midAngle = (curAngle + nextAngle) / 2.0;
         }
 
-        final int atanAngleIndex = (atanMult < medianAngleMult) ? currentAngleIndex - 1 : currentAngleIndex;
+        final int atanAngleIndex = nextAngleIndex - (actualAngle < midAngle ? 1 : 0);
         ATAN_TABLE[i] = atanAngleIndex;
       }
     }

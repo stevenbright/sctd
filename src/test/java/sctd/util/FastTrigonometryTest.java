@@ -12,10 +12,10 @@ public final class FastTrigonometryTest {
 
   @Test
   public void shouldCalculateAtan() {
-    for (double i = 0.0; i < 100.0; i = i + 0.01) {
+    for (double i = 0.0; i < 100.0; i = i + 0.001) {
       final double actualAtan = Math.atan(i);
       final double fastMathAtan = FastTrigonometry.toRadians(FastTrigonometry.atan(i));
-      assertEquals("Atan doesn't match for i=" + i, actualAtan, fastMathAtan, 0.5);
+      assertEquals("Atan doesn't match for i=" + i, actualAtan, fastMathAtan, 0.03);
     }
   }
 
