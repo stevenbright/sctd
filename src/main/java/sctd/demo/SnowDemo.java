@@ -2,6 +2,8 @@ package sctd.demo;
 
 import sctd.graphics.SpriteService;
 import sctd.graphics.TileService;
+import sctd.graphics.Viewport;
+import sctd.graphics.support.DefaultViewportService;
 import sctd.graphics.support.DemoSpriteService;
 import sctd.graphics.support.DemoTileService;
 import sctd.logic.command.MoveCommand;
@@ -11,13 +13,14 @@ import sctd.main.GameLoopCallback;
 import sctd.main.MainGameWindow;
 import sctd.model.GameField;
 import sctd.model.GameUnit;
+import sctd.model.PlayerAction;
+import sctd.util.ScreenParameters;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,26 +29,23 @@ import java.util.Set;
  */
 public final class SnowDemo extends GameLoopCallback {
 
-  private int fx = 250;
-  private int fy = 250;
 
   private final GameDispatcher dispatcher;
   private final GameField gameField;
-  private final SpriteService spriteService = new DemoSpriteService();
-  private final TileService tileService = new DemoTileService();
-  private int viewportX;
-  private int viewportY;
+  private final SpriteService spriteService;
+  private final TileService tileService;
 
-  public enum PlayerAction {
-    GO_UP,
-    GO_DOWN,
-    GO_LEFT,
-    GO_RIGHT,
-  }
+  private final Viewport viewport;
 
   public SnowDemo() {
     dispatcher = new GameDispatcher();
-    gameField = new GameField(64, 64);
+    gameField = new GameField(52, 33);
+
+    final DefaultViewportService viewportService = new DefaultViewportService(gameField,
+        ScreenParameters.getWidth(), ScreenParameters.getHeight());
+    viewport = viewportService;
+    spriteService = new DemoSpriteService(viewportService);
+    tileService = new DemoTileService(viewportService);
 
     final GameUnit unit1 = dispatcher.addUnit(50, 50, 48, 1);
     unit1.setMaximumVelocity(4);
@@ -74,16 +74,16 @@ public final class SnowDemo extends GameLoopCallback {
     public void keyPressed(KeyEvent e) {
       switch (e.getKeyCode()) {
         case KeyEvent.VK_W:
-          playerActions.add(PlayerAction.GO_UP);
+          playerActions.add(PlayerAction.SCROLL_UP);
           break;
         case KeyEvent.VK_S:
-          playerActions.add(PlayerAction.GO_DOWN);
+          playerActions.add(PlayerAction.SCROLL_DOWN);
           break;
         case KeyEvent.VK_A:
-          playerActions.add(PlayerAction.GO_LEFT);
+          playerActions.add(PlayerAction.SCROLL_LEFT);
           break;
         case KeyEvent.VK_D:
-          playerActions.add(PlayerAction.GO_RIGHT);
+          playerActions.add(PlayerAction.SCROLL_RIGHT);
           break;
       }
     }
@@ -92,16 +92,16 @@ public final class SnowDemo extends GameLoopCallback {
     public void keyReleased(KeyEvent e) {
       switch (e.getKeyCode()) {
         case KeyEvent.VK_W:
-          playerActions.remove(PlayerAction.GO_UP);
+          playerActions.remove(PlayerAction.SCROLL_UP);
           break;
         case KeyEvent.VK_S:
-          playerActions.remove(PlayerAction.GO_DOWN);
+          playerActions.remove(PlayerAction.SCROLL_DOWN);
           break;
         case KeyEvent.VK_A:
-          playerActions.remove(PlayerAction.GO_LEFT);
+          playerActions.remove(PlayerAction.SCROLL_LEFT);
           break;
         case KeyEvent.VK_D:
-          playerActions.remove(PlayerAction.GO_RIGHT);
+          playerActions.remove(PlayerAction.SCROLL_RIGHT);
           break;
       }
     }
@@ -111,12 +111,14 @@ public final class SnowDemo extends GameLoopCallback {
 
     @Override
     public void mousePressed(MouseEvent e) {
-      //System.out.println("button=" + e.getButton());
+      // translate coordinates
+      final double x = e.getX() + viewport.getViewportX();
+      final double y = e.getY() + viewport.getViewportY();
 
       if (e.getButton() == MouseEvent.BUTTON1) {
-        SnowDemo.this.dispatcher.select(e.getX(), e.getY());
+        SnowDemo.this.dispatcher.select(x, y);
       } else if (e.getButton() == MouseEvent.BUTTON3) {
-        SnowDemo.this.dispatcher.moveSelectedTo(e.getX(), e.getY());
+        SnowDemo.this.dispatcher.moveSelectedTo(x, y);
       }
     }
   };
@@ -136,7 +138,7 @@ public final class SnowDemo extends GameLoopCallback {
 
   @Override
   public void draw(Graphics2D g2d) {
-    tileService.drawGameField(g2d, gameField, viewportX, viewportY);
+    tileService.drawGameField(g2d, gameField);
 
     for (final GameUnit unit : dispatcher.getUnits()) {
       spriteService.drawUnit(unit, g2d);
@@ -148,23 +150,17 @@ public final class SnowDemo extends GameLoopCallback {
       counter = 0;
     }
 
-
-    g2d.setPaint(Color.RED);
-    int fw = 20;
-    g2d.fill(new Rectangle2D.Double(fx - fw / 2, fy - fw / 2, fw, fw));
-
-    int fdelta = 2;
-    if (playerActions.contains(PlayerAction.GO_UP)) {
-      fy = fy - fdelta;
+    if (playerActions.contains(PlayerAction.SCROLL_UP)) {
+      viewport.scrollUp();
     }
-    if (playerActions.contains(PlayerAction.GO_DOWN)) {
-      fy = fy + fdelta;
+    if (playerActions.contains(PlayerAction.SCROLL_DOWN)) {
+      viewport.scrollDown();
     }
-    if (playerActions.contains(PlayerAction.GO_LEFT)) {
-      fx = fx - fdelta;
+    if (playerActions.contains(PlayerAction.SCROLL_LEFT)) {
+      viewport.scrollLeft();
     }
-    if (playerActions.contains(PlayerAction.GO_RIGHT)) {
-      fx = fx + fdelta;
+    if (playerActions.contains(PlayerAction.SCROLL_RIGHT)) {
+      viewport.scrollRight();
     }
   }
 }

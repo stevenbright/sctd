@@ -1,6 +1,7 @@
 package sctd.graphics.support;
 
 import sctd.graphics.SpriteService;
+import sctd.graphics.Viewport;
 import sctd.model.GameUnit;
 
 import java.awt.*;
@@ -10,13 +11,22 @@ import java.awt.geom.Ellipse2D;
  * @author Alexander Shabanov
  */
 public final class DemoSpriteService implements SpriteService {
+  private final Viewport viewport;
+
+  public DemoSpriteService(Viewport viewport) {
+    this.viewport = viewport;
+  }
 
   @Override
   public void drawUnit(GameUnit unit, Graphics2D g2d) {
-    drawSelectionMark(unit, g2d);
+    // TODO: skip if outside the screen
+    final double unitX = unit.getX() - viewport.getViewportX();
+    final double unitY = unit.getY() - viewport.getViewportY();
+
+    drawSelectionMark(unit, g2d, unitX, unitY);
 
     if (unit.getSpriteId() < 10) {
-      drawAirplanes(unit, g2d);
+      drawAirplanes(unit, g2d, unitX, unitY);
     }
   }
 
@@ -24,15 +34,15 @@ public final class DemoSpriteService implements SpriteService {
   // Private
   //
 
-  private static void drawSelectionMark(GameUnit unit, Graphics2D g2d) {
+  private static void drawSelectionMark(GameUnit unit, Graphics2D g2d, double unitX, double unitY) {
     if (unit.isSelected()) {
       g2d.setPaint(Color.GREEN);
       final double gap = unit.getSize() / 4;
-      g2d.draw(new Ellipse2D.Double(unit.getX(), unit.getY() + gap, unit.getSize(), unit.getSize() - gap));
+      g2d.draw(new Ellipse2D.Double(unitX, unitY + gap, unit.getSize(), unit.getSize() - gap));
     }
   }
 
-  private static void drawAirplanes(GameUnit unit, Graphics2D g2d) {
+  private void drawAirplanes(GameUnit unit, Graphics2D g2d, double unitX, double unitY) {
     final Color bkColor;
     final Color triColor;
     switch (unit.getSpriteId()) {
@@ -57,8 +67,8 @@ public final class DemoSpriteService implements SpriteService {
 
     // center coord
     final int size = (int) unit.getSize();
-    final int cx = (int) (unit.getX() + size / 2.0);
-    final int cy = (int) (unit.getY() + size / 2.0);
+    final int cx = (int) (unitX + size / 2.0);
+    final int cy = (int) (unitY + size / 2.0);
 
     final double angle = unit.getAngleAsRadians();
     g2d.rotate(angle, cx, cy);

@@ -8,5 +8,5 @@ import java.awt.*;
  * @author Alexander Shabanov
  */
 public interface TileService {
-  void drawGameField(Graphics2D g2d, GameField gameField, int viewportX, int viewportY);
+  void drawGameField(Graphics2D g2d, GameField gameField);
 }

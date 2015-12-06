@@ -1,8 +1,8 @@
 package sctd.graphics.support;
 
+import sctd.graphics.Viewport;
 import sctd.graphics.TileService;
 import sctd.model.GameField;
-import sctd.util.ScreenParameters;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -13,16 +13,28 @@ import java.awt.geom.Rectangle2D;
 public final class DemoTileService implements TileService {
   private static final Color DARK_GREEN = new Color(10, 95, 10);
 
+  private final Viewport viewport;
+
+  public DemoTileService(Viewport viewport) {
+    this.viewport = viewport;
+  }
 
   @Override
-  public void drawGameField(Graphics2D g2d, GameField field, int viewportX, int viewportY) {
+  public void drawGameField(Graphics2D g2d, GameField field) {
+    final int viewportX = viewport.getViewportX();
+    final int viewportY = viewport.getViewportY();
+
     // find bounding tile indexes to draw
     final int leftOffset = viewportX % field.getTileWidth();
     final int topOffset = viewportY % field.getTileHeight();
     final int leftIndex = viewportX / field.getTileWidth();
     final int topIndex = viewportY / field.getTileHeight();
-    final int rightIndex = leftIndex + ScreenParameters.getWidth() / field.getTileWidth() + 1;
-    final int bottomIndex = topIndex + ScreenParameters.getHeight() / field.getTileHeight() + 1;
+
+    final int rightIndex = Math.min(leftIndex + viewport.getViewportWidth() / field.getTileWidth() + 1,
+        field.getHorizontalTileCount());
+
+    final int bottomIndex = Math.min(topIndex + viewport.getViewportHeight() / field.getTileHeight() + 1,
+        field.getVerticalTileCount());
 
     int y = -topOffset;
     for (int j = topIndex; j < bottomIndex; ++j) {

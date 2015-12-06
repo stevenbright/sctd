@@ -43,12 +43,20 @@ public final class GameField {
     return tileHeight;
   }
 
-  public int getWidth() {
+  public int getHorizontalTileCount() {
     return width;
   }
 
-  public int getHeight() {
+  public int getVerticalTileCount() {
     return height;
+  }
+
+  public int getWidth() {
+    return getHorizontalTileCount() * getTileWidth();
+  }
+
+  public int getHeight() {
+    return getVerticalTileCount() * getTileHeight();
   }
 
   public Tile getTile(int x, int y) {
@@ -64,10 +72,10 @@ public final class GameField {
   //
 
   private int getTileIndex(int x, int y) {
-    if (x < 0 || x >= width || y < 0 || y >= height) {
+    if (x < 0 || x >= getHorizontalTileCount() || y < 0 || y >= getVerticalTileCount()) {
       throw new IndexOutOfBoundsException("x=" + x + ", y=" + y);
     }
 
-    return y * width + x;
+    return y * getHorizontalTileCount() + x;
   }
 }
