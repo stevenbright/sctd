@@ -11,8 +11,6 @@ import java.util.List;
  * @author Alexander Shabanov
  */
 public final class GameDispatcher implements CommandProcessor {
-  private static final int DEFAULT_STOP_TIMER_VALUE = 2;
-
   private final List<GameUnit> units = new ArrayList<>(100);
   private int idCounter = 1;
 
@@ -22,7 +20,7 @@ public final class GameDispatcher implements CommandProcessor {
     return units;
   }
 
-  public GameUnit addUnit(int x, int y, int size, int spriteId) {
+  public GameUnit addUnit(double x, double y, double size, int spriteId) {
     final GameUnit unit = new GameUnit();
     unit.setId(idCounter++);
     unit.setCoordinates(x, y, 0);
@@ -46,11 +44,7 @@ public final class GameDispatcher implements CommandProcessor {
     //noinspection ForLoopReplaceableByForEach
     for (int i = 0; i < size; ++i) {
       final GameUnit unit = units.get(i);
-      final double ux = unit.getX();
-      final double uy = unit.getY();
-      final double us = unit.getSize();
-
-      if ((x > ux) && (x < (ux + us)) && (y > uy) && (y < (uy + us))) {
+      if (unit.isPointWithin(x, y)) {
         // remove previous selection
         if (selectedUnit != null) {
           selectedUnit.setSelected(false);
@@ -77,65 +71,16 @@ public final class GameDispatcher implements CommandProcessor {
 
   @Override
   public void move(GameUnit unit, double targetX, double targetY) {
-    moveTo(unit, targetX, targetY);
+    unit.moveTo(targetX, targetY);
   }
 
   @Override
   public void patrol(GameUnit unit, double targetX, double targetY) {
-    moveTo(unit, targetX, targetY);
+    unit.moveTo(targetX, targetY);
   }
 
   @Override
   public void standStill(GameUnit unit) {
-    // TODO: idle move
-  }
-
-  //
-  // Private
-  //
-
-  private boolean moveTo(GameUnit unit, double targetX, double targetY) {
-    // unit already arrived?
-    if (unit.isJustStopped()) {
-      if (unit.getStopTimer() > 0) {
-        unit.setStopTimer(unit.getStopTimer() - 1);
-      } else {
-        // stop timer is out, complete current movement command
-        unit.getCommands().completeCommand();
-        unit.setJustStopped(false); // continue to the next command
-      }
-
-      return true; // arrived
-    }
-
-
-    final double dx = targetX - unit.getX();
-    final double dy = targetY - unit.getY();
-    final double dist = Math.sqrt(dy * dy + dx * dx);
-
-    // calculate speed at the current point
-    unit.accellerate(dist);
-
-    // unit has arrived? - if yes, stop it
-    if (dist <= unit.getCurrentVelocity()) {
-      unit.setCurrentVelocity(0);
-      unit.setCoordinates(targetX, targetY, unit.getZ());
-      unit.setStopTimer(DEFAULT_STOP_TIMER_VALUE);
-      unit.setJustStopped(true);
-      return true; // arrived
-    }
-
-    // is unit faces the right direction? - if no, rotate it
-    final double angle = Math.atan2(dy, dx);
-    if (!unit.rotateToAngle(angle)) {
-      return false;
-    }
-
-    // move unit to the target coordinates
-    final double newX = unit.getX() + unit.getCurrentVelocity() * Math.cos(angle);
-    final double newY = unit.getY() + unit.getCurrentVelocity() * Math.sin(angle);
-    unit.setCoordinates(newX, newY, unit.getZ());
-
-    return false; // unit is on its way
+    unit.incIdleTimer();
   }
 }

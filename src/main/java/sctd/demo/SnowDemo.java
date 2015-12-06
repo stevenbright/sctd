@@ -1,12 +1,15 @@
 package sctd.demo;
 
 import sctd.graphics.SpriteService;
+import sctd.graphics.TileService;
 import sctd.graphics.support.DemoSpriteService;
+import sctd.graphics.support.DemoTileService;
 import sctd.logic.command.MoveCommand;
 import sctd.logic.command.PatrolCommand;
 import sctd.logic.dispatcher.GameDispatcher;
 import sctd.main.GameLoopCallback;
 import sctd.main.MainGameWindow;
+import sctd.model.GameField;
 import sctd.model.GameUnit;
 
 import java.awt.*;
@@ -27,9 +30,13 @@ public final class SnowDemo extends GameLoopCallback {
   private int fy = 250;
 
   private final GameDispatcher dispatcher;
+  private final GameField gameField;
   private final SpriteService spriteService = new DemoSpriteService();
+  private final TileService tileService = new DemoTileService();
+  private int viewportX;
+  private int viewportY;
 
-  private enum PlayerAction {
+  public enum PlayerAction {
     GO_UP,
     GO_DOWN,
     GO_LEFT,
@@ -38,6 +45,7 @@ public final class SnowDemo extends GameLoopCallback {
 
   public SnowDemo() {
     dispatcher = new GameDispatcher();
+    gameField = new GameField(64, 64);
 
     final GameUnit unit1 = dispatcher.addUnit(50, 50, 48, 1);
     unit1.setMaximumVelocity(4);
@@ -128,6 +136,8 @@ public final class SnowDemo extends GameLoopCallback {
 
   @Override
   public void draw(Graphics2D g2d) {
+    tileService.drawGameField(g2d, gameField, viewportX, viewportY);
+
     for (final GameUnit unit : dispatcher.getUnits()) {
       spriteService.drawUnit(unit, g2d);
     }

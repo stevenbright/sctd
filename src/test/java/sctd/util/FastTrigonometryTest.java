@@ -13,24 +13,24 @@ public final class FastTrigonometryTest {
   public void shouldCalculateSinAndCos() {
     verifySinAndCos(0, 0.0);
 
-    verifySinAndCos(FastTrigonometry.HALF_N / 8, Math.PI / 8);
-    verifySinAndCos(FastTrigonometry.HALF_N / 4, Math.PI / 4);
-    verifySinAndCos(3 * FastTrigonometry.HALF_N / 8, 3 * Math.PI / 8);
-    verifySinAndCos(FastTrigonometry.QUARTER_N, Math.PI / 2);
+    verifySinAndCos(FastTrigonometry.HALF_DEG / 8, Math.PI / 8);
+    verifySinAndCos(FastTrigonometry.HALF_DEG / 4, Math.PI / 4);
+    verifySinAndCos(3 * FastTrigonometry.HALF_DEG / 8, 3 * Math.PI / 8);
+    verifySinAndCos(FastTrigonometry.QUARTER_DEG, Math.PI / 2);
 
-    verifySinAndCos(7 * FastTrigonometry.HALF_N / 8, 7 * Math.PI / 8);
-    verifySinAndCos(3 * FastTrigonometry.HALF_N / 4, 3 * Math.PI / 4);
-    verifySinAndCos(5 * FastTrigonometry.HALF_N / 8, 5 * Math.PI / 8);
-    verifySinAndCos(FastTrigonometry.HALF_N, Math.PI);
+    verifySinAndCos(7 * FastTrigonometry.HALF_DEG / 8, 7 * Math.PI / 8);
+    verifySinAndCos(3 * FastTrigonometry.HALF_DEG / 4, 3 * Math.PI / 4);
+    verifySinAndCos(5 * FastTrigonometry.HALF_DEG / 8, 5 * Math.PI / 8);
+    verifySinAndCos(FastTrigonometry.HALF_DEG, Math.PI);
 
-    verifySinAndCos(11 * FastTrigonometry.HALF_N / 8, 11 * Math.PI / 8);
-    verifySinAndCos(5 * FastTrigonometry.HALF_N / 4, 5 * Math.PI / 4);
-    verifySinAndCos(9 * FastTrigonometry.HALF_N / 8, 9 * Math.PI / 8);
-    verifySinAndCos(FastTrigonometry.THREE_QUARTERS_N, 3 * Math.PI / 2);
+    verifySinAndCos(11 * FastTrigonometry.HALF_DEG / 8, 11 * Math.PI / 8);
+    verifySinAndCos(5 * FastTrigonometry.HALF_DEG / 4, 5 * Math.PI / 4);
+    verifySinAndCos(9 * FastTrigonometry.HALF_DEG / 8, 9 * Math.PI / 8);
+    verifySinAndCos(FastTrigonometry.THREE_QUARTERS_DEG, 3 * Math.PI / 2);
 
-    verifySinAndCos(15 * FastTrigonometry.HALF_N / 8, 15 * Math.PI / 8);
-    verifySinAndCos(7 * FastTrigonometry.HALF_N / 4, 7 * Math.PI / 4);
-    verifySinAndCos(13 * FastTrigonometry.HALF_N / 8, 13 * Math.PI / 8);
+    verifySinAndCos(15 * FastTrigonometry.HALF_DEG / 8, 15 * Math.PI / 8);
+    verifySinAndCos(7 * FastTrigonometry.HALF_DEG / 4, 7 * Math.PI / 4);
+    verifySinAndCos(13 * FastTrigonometry.HALF_DEG / 8, 13 * Math.PI / 8);
   }
 
   @Test
@@ -45,7 +45,7 @@ public final class FastTrigonometryTest {
 
   @Test
   public void shouldCalculateAtan2() {
-    for (int i = 0; i < FastTrigonometry.N; ++i) {
+    for (int i = 0; i < FastTrigonometry.DEG; ++i) {
       final double angle = FastTrigonometry.toRadians(i);
       final double r = 10;
       final double x = r * Math.cos(angle);

@@ -1,6 +1,7 @@
 package sctd.main;
 
 import sctd.util.Delay;
+import sctd.util.ScreenParameters;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,13 +13,10 @@ import java.awt.image.BufferStrategy;
  * @author Alexander Shabanov
  */
 public final class MainGameWindow {
-  public static final int DEFAULT_CANVAS_WIDTH = 1024;
-  public static final int DEFAULT_CANVAS_HEIGHT = 768;
-
   private BufferStrategy bsStrategy; // fast flips
   private boolean bRunning = true; // main loop
-  private final int canvasWidth = DEFAULT_CANVAS_WIDTH;
-  private final int canvasHeight = DEFAULT_CANVAS_HEIGHT;
+  private final int canvasWidth = ScreenParameters.getWidth();
+  private final int canvasHeight = ScreenParameters.getHeight();
   private GameLoopCallback gameLoopCallback;
   private final Canvas canvas;
 

@@ -60,7 +60,8 @@ public final class DemoSpriteService implements SpriteService {
     final int cx = (int) (unit.getX() + size / 2.0);
     final int cy = (int) (unit.getY() + size / 2.0);
 
-    g2d.rotate(unit.getAngle(), cx, cy);
+    final double angle = unit.getAngleAsRadians();
+    g2d.rotate(angle, cx, cy);
 
     // prepare polygon array
     final int[] xp = new int[3];
@@ -84,6 +85,6 @@ public final class DemoSpriteService implements SpriteService {
       g2d.fillPolygon(xp, yp, 3);
     }
 
-    g2d.rotate(-unit.getAngle(), cx, cy); // restore angle
+    g2d.rotate(-angle, cx, cy); // restore angle
   }
 }

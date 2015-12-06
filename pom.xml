@@ -36,14 +36,6 @@
       <version>${slf4j.version}</version>
     </dependency>
 
-    <!-- lombok -->
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.16.4</version>
-      <scope>provided</scope>
-    </dependency>
-
     <!-- Test scope -->
     <dependency>
       <groupId>junit</groupId>
@@ -58,32 +50,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.projectlombok</groupId>
-          <artifactId>lombok-maven-plugin</artifactId>
-          <version>${lombok-plugin.version}</version>
-          <executions>
-            <execution>
-              <id>delombok</id>
-              <phase>generate-sources</phase>
-              <goals>
-                <goal>delombok</goal>
-              </goals>
-            </execution>
-            <execution>
-              <id>test-delombok</id>
-              <phase>generate-test-sources</phase>
-              <goals>
-                <goal>testDelombok</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
 </project>

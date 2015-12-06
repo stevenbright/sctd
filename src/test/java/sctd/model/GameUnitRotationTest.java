@@ -1,6 +1,9 @@
 package sctd.model;
 
+import org.junit.Ignore;
 import org.junit.Test;
+import sctd.util.DiscreteAngle;
+import sctd.util.FastTrigonometry;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -10,66 +13,66 @@ import static org.junit.Assert.assertFalse;
  *
  * @author Alexander Shabanov
  */
+@Ignore
 public final class GameUnitRotationTest {
-  private static final double EPSILON = 0.000001;
 
   @Test
   public void shouldRotateClockwiseInFirstQuarter() {
     // Given:
-    final double sourceAngle = Math.PI / 4;
-    final double targetAngle = 0;
-    final double angularVelocity = Math.PI / 8;
+    final int sourceAngle = FastTrigonometry.HALF_DEG / 4;
+    final int targetAngle = 0;
+    final int angularVelocity = FastTrigonometry.HALF_DEG / 8;
 
     // When:
-    final double interimAngle = getRotationAngle(sourceAngle, targetAngle, angularVelocity);
+    final int interimAngle = getRotationAngle(sourceAngle, targetAngle, angularVelocity);
 
     // Then:
-    assertEquals(angularVelocity, interimAngle, EPSILON);
+    assertEquals(angularVelocity, interimAngle);
   }
 
   @Test
   public void shouldRotateCounterClockwiseInFirstQuarter() {
     // Given:
-    final double sourceAngle = Math.PI / 4;
-    final double targetAngle = Math.PI / 2;
-    final double angularVelocity = Math.PI / 8;
+    final int sourceAngle = FastTrigonometry.HALF_DEG / 4;
+    final int targetAngle = FastTrigonometry.HALF_DEG / 2;
+    final int angularVelocity = FastTrigonometry.HALF_DEG / 8;
 
     // When:
-    final double interimAngle = getRotationAngle(sourceAngle, targetAngle, angularVelocity);
+    final int interimAngle = getRotationAngle(sourceAngle, targetAngle, angularVelocity);
 
     // Then:
-    assertEquals(angularVelocity + sourceAngle, interimAngle, EPSILON);
+    assertEquals(angularVelocity + sourceAngle, interimAngle);
   }
 
   @Test
   public void shouldRotateClockwiseInFirstAndFourthQuarter() {
     // Given:
-    final double sourceAngle = Math.PI / 4;
-    final double targetAngle = 7 * Math.PI / 4;
-    final double angularVelocity = Math.PI / 8;
+    final int sourceAngle = FastTrigonometry.HALF_DEG / 4;
+    final int targetAngle = 7 * FastTrigonometry.HALF_DEG / 4;
+    final int angularVelocity = FastTrigonometry.HALF_DEG / 8;
 
     // When:
-    final double interimAngle = getRotationAngle(sourceAngle, targetAngle, angularVelocity);
+    final int interimAngle = getRotationAngle(sourceAngle, targetAngle, angularVelocity);
 
     // Then:
-    assertEquals(angularVelocity, interimAngle, EPSILON);
+    assertEquals(angularVelocity, interimAngle);
   }
 
   @Test
   public void shouldRotateCounterclockwiseInFirstAndFourthQuarter() {
     // Given:
-    final double sourceAngle = 7 * Math.PI / 4;
-    final double targetAngle = Math.PI / 4;
-    final double angularVelocity = Math.PI / 8;
+    final int sourceAngle = 7 * FastTrigonometry.HALF_DEG / 4;
+    final int targetAngle = FastTrigonometry.HALF_DEG / 4;
+    final int angularVelocity = FastTrigonometry.HALF_DEG / 8;
 
     // When:
-    final double interimAngle = getRotationAngle(sourceAngle, targetAngle, angularVelocity);
+    final int interimAngle = getRotationAngle(sourceAngle, targetAngle, angularVelocity);
 
     // Then:
-    assertEquals(sourceAngle + angularVelocity, interimAngle, EPSILON);
+    assertEquals(sourceAngle + angularVelocity, interimAngle);
   }
 
-  private static double getRotationAngle(double sourceAngle, double targetAngle, double angularVelocity) {
+  private static int getRotationAngle(int sourceAngle, int targetAngle, int angularVelocity) {
     final GameUnit gameUnit = new GameUnit();
     gameUnit.setAngle(sourceAngle);
     gameUnit.setAngularVelocity(angularVelocity);
@@ -77,6 +80,6 @@ public final class GameUnitRotationTest {
     final boolean rotationCompleted = gameUnit.rotateToAngle(targetAngle);
     assertFalse("Rotation should not be completed", rotationCompleted);
 
-    return gameUnit.getAngle();
+    return gameUnit.getAngleAsDiscrete();
   }
 }
