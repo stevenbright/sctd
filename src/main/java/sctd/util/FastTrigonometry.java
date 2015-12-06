@@ -30,8 +30,8 @@ public final class FastTrigonometry {
 
   // Inter
 
-  private static final double[] SIN_TABLE = new double[N];
-  private static final double[] COS_TABLE = new double[N];
+  private static final double[] SIN_TABLE = new double[QUARTER_N];
+  private static final double[] COS_TABLE = new double[QUARTER_N];
 
   // found by experimentation, this value is heavily dependent on N
   private static final double ATAN_TABLE_MULTIPLIER = 50.0;
@@ -41,7 +41,7 @@ public final class FastTrigonometry {
   static {
     // cos and sin table
     // NOTE: for space efficiency this can iterate only to QUARTER_N, but sin and cos code will be more complicated
-    for (int i = 0; i < N; ++i) {
+    for (int i = 0; i < QUARTER_N; ++i) {
       final double angle = toRadians(i);
       SIN_TABLE[i] = Math.sin(angle);
       COS_TABLE[i] = Math.cos(angle);
@@ -76,31 +76,25 @@ public final class FastTrigonometry {
   }
 
   public static double sin(int angleIndex) {
-    return SIN_TABLE[angleIndex];
-
-    // NOTE: can operate with quarter only:
-//    if (angleIndex <= QUARTER_N) {
-//      return angleIndex == QUARTER_N ? 1.0 : SIN_TABLE[angleIndex];
-//    } else if (angleIndex <= HALF_N) {
-//      return angleIndex == HALF_N ? 0.0 : SIN_TABLE[HALF_N - angleIndex];
-//    } else if (angleIndex <= THREE_QUARTERS_N) {
-//      return angleIndex == THREE_QUARTERS_N ? -1.0 : -SIN_TABLE[angleIndex - HALF_N];
-//    }
-//    return -SIN_TABLE[N - angleIndex];
+    if (angleIndex <= QUARTER_N) {
+      return angleIndex == QUARTER_N ? 1.0 : SIN_TABLE[angleIndex];
+    } else if (angleIndex <= HALF_N) {
+      return angleIndex == HALF_N ? 0.0 : SIN_TABLE[HALF_N - angleIndex];
+    } else if (angleIndex <= THREE_QUARTERS_N) {
+      return angleIndex == THREE_QUARTERS_N ? -1.0 : -SIN_TABLE[angleIndex - HALF_N];
+    }
+    return -SIN_TABLE[N - angleIndex];
   }
 
   public static double cos(int angleIndex) {
-    return COS_TABLE[angleIndex];
-
-    // NOTE: can operate with quarter only:
-//    if (angleIndex <= QUARTER_N) {
-//      return angleIndex == QUARTER_N ? 0.0 : COS_TABLE[angleIndex];
-//    } else if (angleIndex <= HALF_N) {
-//      return angleIndex == HALF_N ? -1.0 : -COS_TABLE[HALF_N - angleIndex];
-//    } else if (angleIndex <= THREE_QUARTERS_N) {
-//      return angleIndex == THREE_QUARTERS_N ? 0.0 : -COS_TABLE[angleIndex - HALF_N];
-//    }
-//    return COS_TABLE[N - angleIndex];
+    if (angleIndex <= QUARTER_N) {
+      return angleIndex == QUARTER_N ? 0.0 : COS_TABLE[angleIndex];
+    } else if (angleIndex <= HALF_N) {
+      return angleIndex == HALF_N ? -1.0 : -COS_TABLE[HALF_N - angleIndex];
+    } else if (angleIndex <= THREE_QUARTERS_N) {
+      return angleIndex == THREE_QUARTERS_N ? 0.0 : -COS_TABLE[angleIndex - HALF_N];
+    }
+    return COS_TABLE[N - angleIndex];
   }
 
   /**
@@ -121,33 +115,40 @@ public final class FastTrigonometry {
 
   public static int atan2(double y, double x) {
 
-    if (y > 0) {
-
-    }
-
-    if (y == 0.0) {
+    if (y > 0.0) {
       if (x == 0.0) {
-        throw new IllegalArgumentException("Both x and y can't be zero");
+        return QUARTER_N;
       }
-      if (x > 0) {
-        return 0;
+
+      if (x < 0.0) {
+        x = -x;
+        final double v = (Math.sqrt(y * y + x * x) - x) / y;
+        return HALF_N - 2 * atan(v);
       }
-      return HALF_N; // equivalent of PI
-    }
 
-    if (x == 0.0) {
-      return y > 0 ? 0 : THREE_QUARTERS_N;
-    }
-
-    if (y > 0) {
-      if (x < 0) {
-
-      } else {
-
+      final double v = (Math.sqrt(y * y + x * x) - x) / y;
+      return 2 * atan(v);
+    } else if (y < 0.0) {
+      if (x == 0.0) {
+        return THREE_QUARTERS_N;
       }
-    }
 
-    final double v = (Math.sqrt(y * y + x * x) - x) / y;
-    return 2 * atan(v);
+      if (x < 0.0) {
+        x = -x;
+        y = -y;
+        final double v = (Math.sqrt(y * y + x * x) - x) / y;
+        return HALF_N + 2 * atan(v);
+      }
+
+      y = -y;
+      final double v = (Math.sqrt(y * y + x * x) - x) / y;
+      return N - 2 * atan(v);
+    } else if (x > 0.0) {
+      return 0;
+    } else if (x < 0.0) {
+      return HALF_N;
+    } else {
+      throw new IllegalArgumentException("Both x and y can't be zero");
+    }
   }
 }

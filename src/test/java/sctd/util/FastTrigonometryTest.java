@@ -10,27 +10,27 @@ import static org.junit.Assert.assertEquals;
 public final class FastTrigonometryTest {
 
   @Test
-  public void shouldMatchQuarters() {
-    matchSinAndCos(0, 0.0);
+  public void shouldCalculateSinAndCos() {
+    verifySinAndCos(0, 0.0);
 
-    matchSinAndCos(FastTrigonometry.HALF_N / 8, Math.PI / 8);
-    matchSinAndCos(FastTrigonometry.HALF_N / 4, Math.PI / 4);
-    matchSinAndCos(3 * FastTrigonometry.HALF_N / 8, 3 * Math.PI / 8);
-    matchSinAndCos(FastTrigonometry.QUARTER_N, Math.PI / 2);
+    verifySinAndCos(FastTrigonometry.HALF_N / 8, Math.PI / 8);
+    verifySinAndCos(FastTrigonometry.HALF_N / 4, Math.PI / 4);
+    verifySinAndCos(3 * FastTrigonometry.HALF_N / 8, 3 * Math.PI / 8);
+    verifySinAndCos(FastTrigonometry.QUARTER_N, Math.PI / 2);
 
-    matchSinAndCos(7 * FastTrigonometry.HALF_N / 8, 7 * Math.PI / 8);
-    matchSinAndCos(3 * FastTrigonometry.HALF_N / 4, 3 * Math.PI / 4);
-    matchSinAndCos(5 * FastTrigonometry.HALF_N / 8, 5 * Math.PI / 8);
-    matchSinAndCos(FastTrigonometry.HALF_N, Math.PI);
+    verifySinAndCos(7 * FastTrigonometry.HALF_N / 8, 7 * Math.PI / 8);
+    verifySinAndCos(3 * FastTrigonometry.HALF_N / 4, 3 * Math.PI / 4);
+    verifySinAndCos(5 * FastTrigonometry.HALF_N / 8, 5 * Math.PI / 8);
+    verifySinAndCos(FastTrigonometry.HALF_N, Math.PI);
 
-    matchSinAndCos(11 * FastTrigonometry.HALF_N / 8, 11 * Math.PI / 8);
-    matchSinAndCos(5 * FastTrigonometry.HALF_N / 4, 5 * Math.PI / 4);
-    matchSinAndCos(9 * FastTrigonometry.HALF_N / 8, 9 * Math.PI / 8);
-    matchSinAndCos(FastTrigonometry.THREE_QUARTERS_N, 3 * Math.PI / 2);
+    verifySinAndCos(11 * FastTrigonometry.HALF_N / 8, 11 * Math.PI / 8);
+    verifySinAndCos(5 * FastTrigonometry.HALF_N / 4, 5 * Math.PI / 4);
+    verifySinAndCos(9 * FastTrigonometry.HALF_N / 8, 9 * Math.PI / 8);
+    verifySinAndCos(FastTrigonometry.THREE_QUARTERS_N, 3 * Math.PI / 2);
 
-    matchSinAndCos(15 * FastTrigonometry.HALF_N / 8, 15 * Math.PI / 8);
-    matchSinAndCos(7 * FastTrigonometry.HALF_N / 4, 7 * Math.PI / 4);
-    matchSinAndCos(13 * FastTrigonometry.HALF_N / 8, 13 * Math.PI / 8);
+    verifySinAndCos(15 * FastTrigonometry.HALF_N / 8, 15 * Math.PI / 8);
+    verifySinAndCos(7 * FastTrigonometry.HALF_N / 4, 7 * Math.PI / 4);
+    verifySinAndCos(13 * FastTrigonometry.HALF_N / 8, 13 * Math.PI / 8);
   }
 
   @Test
@@ -53,9 +53,7 @@ public final class FastTrigonometryTest {
       final double signedAtan2Value = Math.atan2(y, x);
       final double expectedAtan2Value = signedAtan2Value < 0 ? (2 * Math.PI + signedAtan2Value) : signedAtan2Value;
       assertEquals(angle, expectedAtan2Value, 0.0001);
-      if (i <= FastTrigonometry.QUARTER_N) {
-        assertEquals("Mismatch angle for i=" + i, angle, FastTrigonometry.toRadians(FastTrigonometry.atan2(y, x)), 0.05);
-      }
+      assertEquals("Mismatch angle for i=" + i, angle, FastTrigonometry.toRadians(FastTrigonometry.atan2(y, x)), 0.05);
     }
   }
 
@@ -63,9 +61,9 @@ public final class FastTrigonometryTest {
   // Private
   //
 
-  private static void matchSinAndCos(int angleIndex, double angleRadians) {
-    final double epsilon = 0.0001;
-    assertEquals("Mismatch for sn " + angleIndex, Math.sin(angleRadians), FastTrigonometry.sin(angleIndex), epsilon);
-    assertEquals("Mismatch for cs " + angleIndex, Math.cos(angleRadians), FastTrigonometry.cos(angleIndex), epsilon);
+  private static void verifySinAndCos(int angleIndex, double angleRadians) {
+    final double ep = 0.0001;
+    assertEquals("Mismatch for sin#" + angleIndex, Math.sin(angleRadians), FastTrigonometry.sin(angleIndex), ep);
+    assertEquals("Mismatch for cos#" + angleIndex, Math.cos(angleRadians), FastTrigonometry.cos(angleIndex), ep);
   }
 }
