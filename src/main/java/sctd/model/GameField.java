@@ -1,10 +1,7 @@
 package sctd.model;
 
 /**
- * Isometric tile
- * http://flarerpg.org/tutorials/isometric_intro/
- *
- * Camera: Camera angle (60, 0, 45) for video-game style isometric (tiles that are 2x wide as they are tall)
+ * Top-down game view field.
  *
  * @author Alexander Shabanov
  */

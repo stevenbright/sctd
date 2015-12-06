@@ -2,6 +2,8 @@ package sctd.model;
 
 import sctd.logic.command.queue.GameCommandQueue;
 
+import java.awt.geom.Rectangle2D;
+
 import static sctd.util.DbgFastTrigonometry.*;
 
 /**
@@ -113,7 +115,6 @@ public final class GameUnit {
     return commands;
   }
 
-
   //
   // Mutators
   //
@@ -195,14 +196,25 @@ public final class GameUnit {
     this.selected = selected;
   }
 
-  public boolean isPointWithin(double px, double py) {
+  public boolean containsPoint(double px, double py) {
     return (px > x) && (px < (x + size)) && (py > y) && (py < (y + size));
+  }
+
+  public boolean intersects(double x, double y, double w, double h) {
+    final double left = getX();
+    final double top = getY();
+    final double width = getSize();
+    final double height = getSize();
+    return (x + w > left &&
+        y + h > top &&
+        x < left + width &&
+        y < top + height);
   }
 
   public boolean moveTo(double targetX, double targetY) {
     this.idleTimer = 0;
 
-    // this.already arrived?
+    // unit already arrived?
     if (this.isJustStopped()) {
       if (this.getStopTimer() > 0) {
         this.setStopTimer(this.getStopTimer() - 1);
@@ -223,7 +235,7 @@ public final class GameUnit {
     // calculate speed at the current point
     this.accellerate(dist);
 
-    // this.has arrived? - if yes, stop it
+    // unit has arrived? - if yes, stop it
     if (dist <= this.currentVelocity) {
       this.setCurrentVelocity(0);
       this.setCoordinates(targetX, targetY, this.getZ());
@@ -232,13 +244,13 @@ public final class GameUnit {
       return true; // arrived
     }
 
-    // is this.faces the right direction? - if no, rotate it
+    // is unit faces the right direction? - if no, rotate it
     final int angle = atan2(dy, dx);
     if (!this.rotateToAngle(angle)) {
       return false;
     }
 
-    // move this.to the target coordinates
+    // move unit to the target coordinates
     final double newX = x + currentVelocity * cos(angle);
     final double newY = y + currentVelocity * sin(angle);
     this.setCoordinates(newX, newY, z);
@@ -251,13 +263,12 @@ public final class GameUnit {
   }
 
   /**
-   * Returns angle with less precision (to avoid "trembling" effect)
+   * Returns angle converted to radians.
    *
    * @return Angle in radians
    */
   public double getAngleAsRadians() {
-    int angle = getAngle();
-    return toRadians(angle); // throw precision
+    return toRadians(getAngle());
   }
 
   public void incIdleTimer() {

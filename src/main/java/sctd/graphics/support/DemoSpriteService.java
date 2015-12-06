@@ -19,7 +19,12 @@ public final class DemoSpriteService implements SpriteService {
 
   @Override
   public void drawUnit(GameUnit unit, Graphics2D g2d) {
-    // TODO: skip if outside the screen
+    if (!unit.intersects(viewport.getViewportX(), viewport.getViewportY(),
+        viewport.getViewportWidth(), viewport.getViewportHeight())) {
+      // skip drawing this unit
+      return;
+    }
+
     final double unitX = unit.getX() - viewport.getViewportX();
     final double unitY = unit.getY() - viewport.getViewportY();
 

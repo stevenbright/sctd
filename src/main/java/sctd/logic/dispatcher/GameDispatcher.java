@@ -44,7 +44,7 @@ public final class GameDispatcher implements CommandProcessor {
     //noinspection ForLoopReplaceableByForEach
     for (int i = 0; i < size; ++i) {
       final GameUnit unit = units.get(i);
-      if (unit.isPointWithin(x, y)) {
+      if (unit.containsPoint(x, y)) {
         // remove previous selection
         if (selectedUnit != null) {
           selectedUnit.setSelected(false);
