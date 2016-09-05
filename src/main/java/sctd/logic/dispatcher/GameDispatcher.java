@@ -14,7 +14,7 @@ public final class GameDispatcher implements CommandProcessor {
   private final List<GameUnit> units = new ArrayList<>(100);
   private int idCounter = 1;
 
-  private GameUnit selectedUnit;
+  private List<GameUnit> selectedUnits = new ArrayList<>(100);
 
   public List<GameUnit> getUnits() {
     return units;
@@ -39,34 +39,54 @@ public final class GameDispatcher implements CommandProcessor {
     }
   }
 
-  public GameUnit select(double x, double y) {
+  public GameUnit select(double x, double y, boolean allowMultiSelection) {
     final int size = units.size();
+
+    GameUnit result = null;
+
     //noinspection ForLoopReplaceableByForEach
     for (int i = 0; i < size; ++i) {
       final GameUnit unit = units.get(i);
       if (unit.containsPoint(x, y)) {
-        // remove previous selection
-        if (selectedUnit != null) {
-          selectedUnit.setSelected(false);
-        }
-        //System.out.println("Unit #" + unit.getId() + " has been selected");
-        // mark this unit as selected
-        unit.setSelected(true);
-        selectedUnit = unit;
-        return unit;
+        //unit.setSelected(true);
+        result = unit;
+        break;
       }
     }
 
-    return null;
+    // remove previous selection
+    if (allowMultiSelection) {
+      for (final GameUnit unit : selectedUnits) {
+        if (unit == result) {
+          result = null; // disallow duplicate unit in selection list
+          break;
+        }
+      }
+    } else {
+      // clear selection of previous units
+      for (final GameUnit unit : selectedUnits) {
+        unit.setSelected(false);
+      }
+
+      selectedUnits.clear();
+    }
+
+    // finally mark unit as selected
+    if (result != null) {
+      result.setSelected(true);
+      selectedUnits.add(result);
+    }
+
+    return result;
   }
 
-  public GameUnit moveSelectedTo(double x, double y) {
-    final GameUnit unit = this.selectedUnit;
-    if (unit != null) {
+  public List<GameUnit> moveSelectedTo(double x, double y) {
+    for (final GameUnit unit : selectedUnits) {
       final double halfSize = unit.getSize() / 2.0;
       unit.getCommands().newCommand(new MoveCommand(x - halfSize, y - halfSize));
     }
-    return unit;
+
+    return selectedUnits;
   }
 
   @Override

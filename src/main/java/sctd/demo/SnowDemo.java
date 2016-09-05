@@ -21,7 +21,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -34,6 +36,7 @@ public final class SnowDemo extends GameLoopCallback {
   private final GameField gameField;
   private final SpriteService spriteService;
   private final TileService tileService;
+  private boolean allowMultipleSelection = false;
 
   private final Viewport viewport;
 
@@ -85,6 +88,9 @@ public final class SnowDemo extends GameLoopCallback {
         case KeyEvent.VK_D:
           playerActions.add(PlayerAction.SCROLL_RIGHT);
           break;
+        case KeyEvent.VK_CONTROL:
+          allowMultipleSelection = true;
+          break;
       }
     }
 
@@ -103,6 +109,9 @@ public final class SnowDemo extends GameLoopCallback {
         case KeyEvent.VK_D:
           playerActions.remove(PlayerAction.SCROLL_RIGHT);
           break;
+        case KeyEvent.VK_CONTROL:
+          allowMultipleSelection = false;
+          break;
       }
     }
   };
@@ -116,7 +125,7 @@ public final class SnowDemo extends GameLoopCallback {
       final double y = e.getY() + viewport.getViewportY();
 
       if (e.getButton() == MouseEvent.BUTTON1) {
-        SnowDemo.this.dispatcher.select(x, y);
+        SnowDemo.this.dispatcher.select(x, y, allowMultipleSelection);
       } else if (e.getButton() == MouseEvent.BUTTON3) {
         SnowDemo.this.dispatcher.moveSelectedTo(x, y);
       }
@@ -133,15 +142,28 @@ public final class SnowDemo extends GameLoopCallback {
     mainGameWindow.startLoop();
   }
 
-  long counter = 0;
-  static final long COUNTER_GAP = 2;
+  private long counter = 0;
+  private static final long COUNTER_GAP = 2;
 
   @Override
   public void draw(Graphics2D g2d) {
     tileService.drawGameField(g2d, gameField);
 
+    final List<GameUnit> selectedUnits = new ArrayList<>();
     for (final GameUnit unit : dispatcher.getUnits()) {
       spriteService.drawUnit(unit, g2d);
+      if (unit.isSelected()) {
+        selectedUnits.add(unit);
+      }
+    }
+
+    // show info about selected units
+    g2d.setColor(Color.green);
+    if (selectedUnits.size() == 1) {
+      final GameUnit selectedUnit = selectedUnits.get(0);
+      g2d.drawString("> selected unit: id=" + selectedUnit.getId() + ", life=" + selectedUnit.getLife(), 5, 60);
+    } else if (selectedUnits.size() > 1) {
+      g2d.drawString("> " + selectedUnits.size() + " units selected", 5, 60);
     }
 
     ++counter;

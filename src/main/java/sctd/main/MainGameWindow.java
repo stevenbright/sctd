@@ -14,7 +14,7 @@ import java.awt.image.BufferStrategy;
  */
 public final class MainGameWindow {
   private BufferStrategy bsStrategy; // fast flips
-  private boolean bRunning = true; // main loop
+  private boolean isRunning = true; // main loop
   private final int canvasWidth = ScreenParameters.getWidth();
   private final int canvasHeight = ScreenParameters.getHeight();
   private GameLoopCallback gameLoopCallback;
@@ -48,7 +48,7 @@ public final class MainGameWindow {
     frame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
-        bRunning = false;
+        isRunning = false;
         Delay.sleep(10); // this is needed to avoid repaints on closing
 
         frame.dispose();
@@ -67,7 +67,7 @@ public final class MainGameWindow {
     canvas.setIgnoreRepaint(true); // active painting only on canvas, does this apply to swing?
     canvas.requestFocus();  // get focus for keys
 
-    // make it fast with this strat
+    // double buffering to avoid flickering
     canvas.createBufferStrategy(2);
     bsStrategy = canvas.getBufferStrategy();
   }
@@ -79,7 +79,7 @@ public final class MainGameWindow {
     int frames = 0;
     long startTime = System.currentTimeMillis();
 
-    while (bRunning) {
+    while (isRunning) {
       loopTime = System.currentTimeMillis();
 
       final Graphics2D g2d = (Graphics2D) bsStrategy.getDrawGraphics();
